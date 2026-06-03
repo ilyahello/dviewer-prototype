@@ -2646,8 +2646,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   const QFM_OPS = [
     { value: 'any', label: 'Any' },
     { value: '=',   label: '=' },
-    { value: 'в‰Ґ',   label: 'в‰Ґ' },
-    { value: 'в‰¤',   label: 'в‰¤' }
+    { value: '>=',   label: '>=' },
+    { value: '<=',   label: '<=' }
   ];
   const ValueRowComp = ({ val, checked, onToggle, showOperator, disabled }) => {
     const saved = _qfmRowStates.get(val) || { op: 'any', numVal: '' };
@@ -8124,8 +8124,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
             const threshold = parseFloat(String(opInfo.numVal));
             if (isNaN(evVal) || isNaN(threshold)) return ev.comps[id] != null;
             if (opInfo.op === '=')  return evVal === threshold;
-            if (opInfo.op === 'в‰Ґ') return evVal >= threshold;
-            if (opInfo.op === 'в‰¤') return evVal <= threshold;
+            if (opInfo.op === '>=') return evVal >= threshold;
+            if (opInfo.op === '<=') return evVal <= threshold;
             return ev.comps[id] != null;
           });
         });
@@ -8164,7 +8164,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
         if (keywords.length) evs = evs.filter(ev => ev.type !== evType || keywords.some(kw => (ev[qf.attr.key] || '').toLowerCase().includes(kw)));
         return;
       }
-      // System в‰  corrected system toggle
+      // System != corrected system toggle
       const hasNeqCorrSys = qf.values.includes('__neq_corrSys__');
       const normalVals = qf.values.filter(v => v !== '__neq_corrSys__');
       evs = evs.filter(ev => {
@@ -8554,3 +8554,4 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 <style id="__om-edit-overrides">
 </style>
 </body></html>
+
