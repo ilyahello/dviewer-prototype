@@ -3,8 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=/Data%20Viewer%201.4%20(Standalone).html">
-  <title>Data Viewer</title>
+  <title>Data Viewer 1.4</title>
   <style>
     body {
       margin: 0;
@@ -15,10 +14,22 @@
       color: #222;
       font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    a { color: #4547ff; }
   </style>
 </head>
 <body>
-  <p>Opening <a href="/Data%20Viewer%201.4%20(Standalone).html">Data Viewer 1.4</a>...</p>
+  <p>Opening Data Viewer 1.4...</p>
+  <script>
+    (async function () {
+      const url = 'https://raw.githubusercontent.com/ilyahello/dviewer-prototype/main/Data%20Viewer%201.4%20(Standalone).html';
+      const response = await fetch(url, { cache: 'no-store' });
+      if (!response.ok) throw new Error('Failed to load Data Viewer 1.4');
+      const html = await response.text();
+      document.open();
+      document.write(html);
+      document.close();
+    })().catch(function (error) {
+      document.body.textContent = error.message;
+    });
+  </script>
 </body>
 </html>
