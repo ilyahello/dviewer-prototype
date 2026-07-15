@@ -275,28 +275,67 @@ document.addEventListener('DOMContentLoaded', async function() {
 </script>
 <script id="dv-mobile-viewport-fix">
 (function () {
-  function applyViewportHeight() {
-    var viewport = window.visualViewport;
-    var height = viewport && viewport.height ? viewport.height : window.innerHeight;
-    if (!height) return;
-    document.documentElement.style.setProperty('--dv-viewport-height', height + 'px');
+  function isMobileViewport() {
+    return (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) || window.innerWidth <= 768;
   }
 
-  applyViewportHeight();
-  window.addEventListener('resize', applyViewportHeight, { passive: true });
+  function isTouchDevice() {
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  }
+
+  function getViewportHeight() {
+    var viewport = window.visualViewport;
+    return viewport && viewport.height ? viewport.height : window.innerHeight;
+  }
+
+  function getBottomClearance() {
+    var viewport = window.visualViewport;
+    var overlay = 0;
+    if (viewport && window.innerHeight) {
+      overlay = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+    }
+
+    // iOS Safari's bottom toolbar can still overlay fixed-height app shells even
+    // when visualViewport is present. Keep enough scroll tail for the toolbar.
+    var mobileFallback = isMobileViewport() && isTouchDevice() ? 136 : 24;
+    return Math.ceil(Math.max(24, overlay + 24, mobileFallback));
+  }
+
+  function applyViewportFix() {
+    var height = getViewportHeight();
+    if (height) {
+      document.documentElement.style.setProperty('--dv-viewport-height', height + 'px');
+    }
+
+    var clearance = getBottomClearance();
+    document.documentElement.style.setProperty('--dv-mobile-bottom-clearance', clearance + 'px');
+
+    if (!isMobileViewport()) return;
+
+    Array.prototype.slice.call(document.querySelectorAll('main')).forEach(function (node) {
+      node.style.paddingBottom = 'var(--dv-mobile-bottom-clearance)';
+      node.style.scrollPaddingBottom = 'var(--dv-mobile-bottom-clearance)';
+      node.style.WebkitOverflowScrolling = 'touch';
+    });
+  }
+
+  applyViewportFix();
+  window.addEventListener('resize', applyViewportFix, { passive: true });
   window.addEventListener('orientationchange', function () {
-    window.setTimeout(applyViewportHeight, 250);
+    window.setTimeout(applyViewportFix, 250);
+    window.setTimeout(applyViewportFix, 700);
   }, { passive: true });
+
   if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', applyViewportHeight, { passive: true });
-    window.visualViewport.addEventListener('scroll', applyViewportHeight, { passive: true });
+    window.visualViewport.addEventListener('resize', applyViewportFix, { passive: true });
+    window.visualViewport.addEventListener('scroll', applyViewportFix, { passive: true });
   }
 
   var tries = 0;
   var timer = window.setInterval(function () {
     tries += 1;
-    applyViewportHeight();
-    if (tries > 40) window.clearInterval(timer);
+    applyViewportFix();
+    if (tries > 80) window.clearInterval(timer);
   }, 250);
 })();
 </script>
