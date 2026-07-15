@@ -8590,6 +8590,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   }
 
   function mount() {
+    return true;
     if (document.querySelector('[data-dv-version-control]')) return true;
     var title = Array.prototype.slice.call(document.querySelectorAll('span')).find(function (node) {
       return node.textContent && node.textContent.trim() === 'Data Viewer';
